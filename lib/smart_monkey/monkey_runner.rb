@@ -72,7 +72,9 @@ module UIAutoMonkey
       @uia_trace = false
     end
 
-
+    def runMonkey(device,app,bundleId,time_limit,port,proxyport,jar,result_history_dir)
+        `java -jar #{jar} -u #{device} -port #{port} -proxyport #{proxyport} -b #{bundleId} -a #{app} -t #{time_limit} -d #{result_history_dir}`.strip
+    end
     def run_a_case
       log "=================================== Start Test (#{@times+1}/#{total_test_count}) ======================================="
       FileUtils.makedirs(crash_save_dir(@times+1)) unless File.exists?(crash_save_dir(@times+1))
@@ -81,15 +83,15 @@ module UIAutoMonkey
       start_time = Time.now
       watch_syslog do
         begin
-            # runMonkey(@options[:device],@options[:abs_app_path],@options[:app_path],@options[:time_limit_sec],@options[:port],@options[:proxyport],@options[:jar],result_history_dir(@times))
+            runMonkey(@options[:device],@options[:abs_app_path],@options[:app_path],@options[:time_limit_sec],@options[:port],@options[:proxyport],@options[:jar],result_history_dir(@times))
           # unless time_limit_sec.nil?
             # run_process(%W(instruments -w #{device} -l #{time_limit} -t #{automation_template_path} #{app_path} -e UIASCRIPT #{ui_custom_path} -e UIARESULTSPATH #{result_base_dir}))
           # else
             # run_process(%W(instruments -w #{device} -t #{automation_template_path} #{app_path} -e UIASCRIPT #{ui_custom_path} -e UIARESULTSPATH #{result_base_dir}))
           end
-        rescue Timeout::Error
-          kill_all('instruments', '9')
-        end
+        # rescue Timeout::Error
+          # kill_all('instruments', '9')
+        # end
       end
 
       pull_crash_files(@times+1)
