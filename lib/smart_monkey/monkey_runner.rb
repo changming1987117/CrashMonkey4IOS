@@ -73,7 +73,7 @@ module UIAutoMonkey
     end
 
     def runMonkey(device,app,bundleId,time_limit,port,proxyport,jar,result_history_dir)
-        `java -jar #{jar} -u #{device} -port #{port} -proxyport #{proxyport} -b #{bundleId} -a #{app} -t #{time_limit} -d #{result_history_dir}`
+        `java -jar #{jar} -u #{device} -port #{port} -proxyport #{proxyport} -b #{bundleId} -a #{app} -t #{time_limit} -d #{result_history_dir}`.strip
     end
     def run_a_case
       log "=================================== Start Test (#{@times+1}/#{total_test_count}) ======================================="
