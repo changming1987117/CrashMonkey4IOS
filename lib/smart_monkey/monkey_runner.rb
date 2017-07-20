@@ -72,8 +72,8 @@ module UIAutoMonkey
       @uia_trace = false
     end
 
-    def runMonkey(device,app,bundleId,time_limit,port,proxyport)
-        `java -jar ~/iosMonkey/target/iosMonkey-1.1.jar -u #{device} -port #{port} -proxyport #{proxyport} -b #{bundleId} -a #{app} -t #{time_limit}`
+    def runMonkey(device,app,bundleId,time_limit,port,proxyport,jar)
+        `java -jar #{jar} -u #{device} -port #{port} -proxyport #{proxyport} -b #{bundleId} -a #{app} -t #{time_limit}`
     end
     def run_a_case
       log "=================================== Start Test (#{@times+1}/#{total_test_count}) ======================================="
@@ -83,7 +83,7 @@ module UIAutoMonkey
       start_time = Time.now
       watch_syslog do
         begin
-            runMonkey(@options[:device],@options[:abs_app_path],@options[:app_path],@options[:time_limit_sec],@options[:port],@options[:proxyport])
+            runMonkey(@options[:device],@options[:abs_app_path],@options[:app_path],@options[:time_limit_sec],@options[:port],@options[:proxyport],@options[:jar])
           # unless time_limit_sec.nil?
             # run_process(%W(instruments -w #{device} -l #{time_limit} -t #{automation_template_path} #{app_path} -e UIASCRIPT #{ui_custom_path} -e UIARESULTSPATH #{result_base_dir}))
           # else
