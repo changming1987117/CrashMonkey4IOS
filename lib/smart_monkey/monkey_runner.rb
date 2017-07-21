@@ -72,8 +72,21 @@ module UIAutoMonkey
       @uia_trace = false
     end
 
-    def runMonkey(device,app,bundleId,time_limit,port,proxyport,jar,result_history_dir)
-        `java -jar #{jar} -u #{device} -port #{port} -proxyport #{proxyport} -b #{bundleId} -a #{app} -t #{time_limit} -d #{result_history_dir}`.strip
+    def runMonkey(**arg)    
+        arg.each do |k, v|
+        puts "k::#{k}\t,\tv::#{v}"
+        device = arg["device"]
+        app = arg["app"]
+        bundleId = arg["bundleId"]
+        time_limit = arg["time_limit"]
+        host = arg["host"]
+        reuse = arg["reuse"]
+        port = arg["device"]
+        proxyport = arg["proxyport"]
+        jar = arg["jar"]
+        result_base_dir = arg["result_base_dir"]
+        puts `java -jar #{jar} -u #{device} -port #{port} -proxyport #{proxyport} -b #{bundleId} -a #{app} -t #{time_limit} -d #{result_base_dir}`
+        `java -jar #{jar} -u #{device} -port #{port} -proxyport #{proxyport} -b #{bundleId} -a #{app} -t #{time_limit} -d #{result_base_dir}`.strip
     end
     def run_a_case
       log "=================================== Start Test (#{@times+1}/#{total_test_count}) ======================================="
@@ -83,7 +96,8 @@ module UIAutoMonkey
       start_time = Time.now
       watch_syslog do
         begin
-            runMonkey(@options[:device],@options[:abs_app_path],@options[:app_path],@options[:time_limit_sec],@options[:port],@options[:proxyport],@options[:jar],result_history_dir(@times))
+            runMonkey(device:@options[:device], app:@options[:abs_app_path], bundleId:@options[:app_path], time_limit:@options[:time_limit_sec], port:@options[:port], proxyport:@options[:proxyport], jar:@options[:jar], host:@options[:host],reuse:@options[:reuse], result_base_dir:result_base_dir)
+            kill_all('java', '9')
           # unless time_limit_sec.nil?
             # run_process(%W(instruments -w #{device} -l #{time_limit} -t #{automation_template_path} #{app_path} -e UIASCRIPT #{ui_custom_path} -e UIARESULTSPATH #{result_base_dir}))
           # else
