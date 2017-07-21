@@ -76,16 +76,16 @@ module UIAutoMonkey
         arg.each do |k, v|
         puts "k::#{k}\t,\tv::#{v}"
         end
-        device = arg["device"]
-        app = arg["app"]
-        bundleId = arg["bundleId"]
-        time_limit = arg["time_limit"]
-        host = arg["host"]
-        reuse = arg["reuse"]
-        port = arg["port"]
-        proxyport = arg["proxyport"]
-        jar = arg["jar"]
-        result_base_dir = arg["result_base_dir"]
+        device = arg[:device]
+        app = arg[:app]
+        bundleId = arg[:bundleId]
+        time_limit = arg[:time_limit]
+        host = arg[:host]
+        reuse = arg[:reuse]
+        port = arg[:port]
+        proxyport = arg[:proxyport]
+        jar = arg[:jar]
+        result_base_dir = arg[:result_base_dir]
         log "java -jar #{jar} -u #{device} -port #{port} -proxyport #{proxyport} -b #{bundleId} -a #{app} -t #{time_limit} -d #{result_base_dir}"
         `java -jar #{jar} -u #{device} -port #{port} -proxyport #{proxyport} -b #{bundleId} -a #{app} -t #{time_limit} -d #{result_base_dir}`.strip
     end
@@ -97,7 +97,7 @@ module UIAutoMonkey
       start_time = Time.now
       watch_syslog do
         begin
-            runMonkey("device":@options[:device], "app":@options[:abs_app_path], "bundleId":@options[:app_path], "time_limit":@options[:time_limit_sec], "port":@options[:port], "proxyport":@options[:proxyport], "jar":@options[:jar], "host":@options[:host],"reuse":@options[:reuse], "result_base_dir":result_base_dir)
+            runMonkey(device:@options[:device], app:@options[:abs_app_path], bundleId:@options[:app_path], time_limit:@options[:time_limit_sec], port:@options[:port], proxyport:@options[:proxyport], jar:@options[:jar], host:@options[:host],reuse:@options[:reuse], result_base_dir:result_base_dir)
           # unless time_limit_sec.nil?
             # run_process(%W(instruments -w #{device} -l #{time_limit} -t #{automation_template_path} #{app_path} -e UIASCRIPT #{ui_custom_path} -e UIARESULTSPATH #{result_base_dir}))
           # else
