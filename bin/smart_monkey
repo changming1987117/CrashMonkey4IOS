@@ -18,10 +18,10 @@ ARGV.options do |o|
   o.on('-d result_dir', 'Where to output result(default: ./smart_monkey_result)') {|b| opts[:result_base_dir] = File.expand_path(b)}
   o.on('-t time_limit_sec', 'Time limit minutes of running(Required) ') {|b| opts[:time_limit_sec] = b.to_i}
   o.on('-j jar', 'The .jar path of monkey(Required)') {|b| opts[:jar] = b}
-  o.on('-h host', 'Macaca server host(default: 172.0.0.1)') {|b| opts[:host] = b}
+  o.on('-h host', 'Macaca server host(default: 127.0.0.1)') {|b| opts[:host] = b}
   o.on('-r reuse', 'reuse type') {|b| opts[:reuse] = b}
-  o.on('--port', 'Macaca server port(default: 3456)') {|b| opts[:port] = b.to_i}
-  o.on('--proxyport', 'proxyport(default: 8900)') {|b| opts[:proxyport] = b.to_i}
+  o.on('--port', 'Macaca server port(default: 3456)') {|b| opts[:port] = b}
+  o.on('--proxyport', 'proxyport(default: 8900)') {|b| opts[:proxyport] = b}
   o.on('-s dsym_file', 'Use .dSYM file to symbolicating crash logs') {|b| opts[:dsym_file_path] = File.expand_path(b)}
   o.on('-c custom_cfg_path', 'Indicate confige lib directory path, not a file path.') {|b| opts[:custom_cfg_path] = File.expand_path(b)}
   o.on('--event-number event_number', 'The monkey event number(default: 50)'){|b| opts[:event_number] = b}
