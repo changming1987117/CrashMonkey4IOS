@@ -73,9 +73,6 @@ module UIAutoMonkey
     end
 
     def runMonkey(**arg)    
-        arg.each do |k, v|
-        puts "k::#{k}\t,\tv::#{v}"
-        end
         device = arg[:device]
         app = arg[:app]
         bundleId = arg[:bundleId]
@@ -86,7 +83,6 @@ module UIAutoMonkey
         proxyport = arg[:proxyport]
         jar = arg[:jar]
         result_base_dir = arg[:result_base_dir]
-        log "java -jar #{jar} -u #{device} -port #{port} -proxyport #{proxyport} -b #{bundleId} -a #{app} -t #{time_limit} -d #{result_base_dir}"
         `java -jar #{jar} -u #{device} -port #{port} -proxyport #{proxyport} -b #{bundleId} -a #{app} -t #{time_limit} -d #{result_base_dir}`.strip
     end
     def run_a_case
