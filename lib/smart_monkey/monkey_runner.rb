@@ -86,7 +86,6 @@ module UIAutoMonkey
         proxyport = arg["proxyport"]
         jar = arg["jar"]
         result_base_dir = arg["result_base_dir"]
-        puts `java -jar #{jar} -u #{device} -port #{port} -proxyport #{proxyport} -b #{bundleId} -a #{app} -t #{time_limit} -d #{result_base_dir}`
         `java -jar #{jar} -u #{device} -port #{port} -proxyport #{proxyport} -b #{bundleId} -a #{app} -t #{time_limit} -d #{result_base_dir}`.strip
     end
     def run_a_case
@@ -98,15 +97,14 @@ module UIAutoMonkey
       watch_syslog do
         begin
             runMonkey(device:@options[:device], app:@options[:abs_app_path], bundleId:@options[:app_path], time_limit:@options[:time_limit_sec], port:@options[:port], proxyport:@options[:proxyport], jar:@options[:jar], host:@options[:host],reuse:@options[:reuse], result_base_dir:result_base_dir)
-            kill_all('java', '9')
           # unless time_limit_sec.nil?
             # run_process(%W(instruments -w #{device} -l #{time_limit} -t #{automation_template_path} #{app_path} -e UIASCRIPT #{ui_custom_path} -e UIARESULTSPATH #{result_base_dir}))
           # else
             # run_process(%W(instruments -w #{device} -t #{automation_template_path} #{app_path} -e UIASCRIPT #{ui_custom_path} -e UIARESULTSPATH #{result_base_dir}))
-          end
-        # rescue Timeout::Error
-          # kill_all('instruments', '9')
-        # end
+          # end
+        rescue
+          kill_all('java', '9')
+        end
       end
 
       pull_crash_files(@times+1)
