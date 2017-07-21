@@ -75,6 +75,7 @@ module UIAutoMonkey
     def runMonkey(**arg)    
         arg.each do |k, v|
         puts "k::#{k}\t,\tv::#{v}"
+        end
         device = arg["device"]
         app = arg["app"]
         bundleId = arg["bundleId"]
