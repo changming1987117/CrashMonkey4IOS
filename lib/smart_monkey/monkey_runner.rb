@@ -471,7 +471,7 @@ module UIAutoMonkey
 
     def crash_report_list(times)
       # ios version >7.0  => *.ips
-      `ls -t #{crash_save_dir(times)}/*.crash|grep kugou 2>&1;ls -t #{crash_save_dir(times)}/*.ips|grep kugou 2>&1;`.strip.split(/\n/)
+      `ls -t #{crash_save_dir(times)}/*.ips|grep kugou 2>&1;`.strip.split(/\n/)
       # `ls -t #{crash_save_dir}/#{app_name}_*.crash`.strip.split(/\n/)
     end
 
