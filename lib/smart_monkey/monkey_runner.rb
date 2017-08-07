@@ -83,7 +83,7 @@ module UIAutoMonkey
         proxyport = arg[:proxyport]
         jar = arg[:jar]
         result_base_dir = arg[:result_base_dir]
-        `java -jar #{jar} -u #{device} -port #{port} -proxyport #{proxyport} -b #{bundleId} -a #{app} -t #{time_limit} -d #{result_base_dir}`.strip
+        `java -jar #{jar} -u #{device} -port #{port} -proxyport #{proxyport} -b #{bundleId} -a #{app} -t #{time_limit} -d #{result_base_dir} -host #{host} -reuse #{reuse}`.strip
     end
     def run_a_case
       log "=================================== Start Test (#{@times+1}/#{total_test_count}) ======================================="
@@ -471,7 +471,7 @@ module UIAutoMonkey
 
     def crash_report_list(times)
       # ios version >7.0  => *.ips
-      `ls -t #{crash_save_dir(times)}/*.crash 2>&1;ls -t #{crash_save_dir(times)}/*.ips 2>&1;`.strip.split(/\n/)
+      `ls -t #{crash_save_dir(times)}/*.crash|grep kugou 2>&1;ls -t #{crash_save_dir(times)}/*.ips|grep kugou 2>&1;`.strip.split(/\n/)
       # `ls -t #{crash_save_dir}/#{app_name}_*.crash`.strip.split(/\n/)
     end
 
