@@ -38,7 +38,7 @@ module UIAutoMonkey
       log @options.inspect
       FileUtils.remove_dir(result_base_dir, true)
       FileUtils.makedirs(result_base_dir)
-      generate_ui_auto_monkey
+      # generate_ui_auto_monkey
       ###########
       start_time = Time.new.strftime("%Y-%m-%d %H:%M:%S")
       result_list = []
@@ -142,7 +142,7 @@ module UIAutoMonkey
       if @options[:compress_rate]
         compress_image(result_history_dir(@times))
       end
-      rotate_imgs(result_history_dir(@times))
+      #rotate_imgs(result_history_dir(@times))
       rm_instruments_trace(INSTRUMENTS_TRACE_PATH)
       kill_all('iPhone Simulator')
       sleep 3
@@ -471,7 +471,7 @@ module UIAutoMonkey
 
     def crash_report_list(times)
       # ios version >7.0  => *.ips
-      `ls -t #{crash_save_dir(times)}/*.ips|grep kugou 2>&1;`.strip.split(/\n/)
+      `ls -t #{crash_save_dir(times)}/*.crash 2>&1;ls -t #{crash_save_dir(times)}/*.ips 2>&1;`.strip.split(/\n/)
       # `ls -t #{crash_save_dir}/#{app_name}_*.crash`.strip.split(/\n/)
     end
 
