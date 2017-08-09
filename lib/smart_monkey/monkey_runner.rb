@@ -38,7 +38,7 @@ module UIAutoMonkey
       log @options.inspect
       FileUtils.remove_dir(result_base_dir, true)
       FileUtils.makedirs(result_base_dir)
-      # generate_ui_auto_monkey
+      generate_ui_auto_monkey
       ###########
       start_time = Time.new.strftime("%Y-%m-%d %H:%M:%S")
       result_list = []
@@ -63,7 +63,7 @@ module UIAutoMonkey
     end
 
     def setup_running
-      kill_all_need
+      #kill_all_need
       # kill_all('iPhone Simulator')
       FileUtils.remove_dir(result_dir, true)
       ENV['UIARESULTSPATH'] = result_dir
@@ -100,7 +100,7 @@ module UIAutoMonkey
             # run_process(%W(instruments -w #{device} -t #{automation_template_path} #{app_path} -e UIASCRIPT #{ui_custom_path} -e UIARESULTSPATH #{result_base_dir}))
           # end
         rescue
-          kill_all('java', '9')
+          kill_all('iPhone Simulator')
         end
       end
 
@@ -108,7 +108,6 @@ module UIAutoMonkey
       new_cr_list = crash_report_list(@times+1)
       # increase crash report?
       diff_cr_list = new_cr_list - cr_list
-      
       if diff_cr_list.size > 0
         @crashed = true
         new_cr_name = File.basename(diff_cr_list[0]).gsub(/\.ips$/, '.crash')
@@ -122,7 +121,7 @@ module UIAutoMonkey
       end
       # output result
       create_result_html(parse_results)
-
+      @no_run = false
       {
         :start_time => start_time,
         :end_time => Time.now,
@@ -135,7 +134,7 @@ module UIAutoMonkey
     end
 
     def finish_running
-      kill_all_need
+      #kill_all_need
       FileUtils.remove_dir(result_history_dir(@times), true)
       FileUtils.remove_dir(crash_save_dir(@times+1), true)
       FileUtils.move(result_dir, result_history_dir(@times))
@@ -439,6 +438,7 @@ module UIAutoMonkey
 
     def symbolicating_crash_report(crash_base_path)
       `DEVELOPER_DIR=#{xcode_developer_path} #{symbolicatecrash_base_path} -o #{crash_base_path} #{crash_base_path} #{dsym_base_path};wait;`
+      
     end
 
     def result_base_dir
@@ -471,7 +471,8 @@ module UIAutoMonkey
 
     def crash_report_list(times)
       # ios version >7.0  => *.ips
-      `ls -t #{crash_save_dir(times)}/*.crash 2>&1;ls -t #{crash_save_dir(times)}/*.ips 2>&1;`.strip.split(/\n/)
+      puts "ls -t #{crash_save_dir(times)}/kugou*.ips 2>&1;"
+      `ls -t #{crash_save_dir(times)}/kugou*.ips 2>&1;`.strip.split(/\n/)
       # `ls -t #{crash_save_dir}/#{app_name}_*.crash`.strip.split(/\n/)
     end
 
@@ -612,7 +613,7 @@ module UIAutoMonkey
             end
           rescue IOError
             log 'Stop iOS system log capture.'
-            kill_all_need
+            #kill_all_need
           end
         end
       end
