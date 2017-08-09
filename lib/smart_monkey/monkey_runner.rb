@@ -118,6 +118,8 @@ module UIAutoMonkey
           symbolicating_crash_report(diff_cr_list[0])
         end
         FileUtils.cp diff_cr_list[0], new_cr_path
+      else
+        `cd "#{result_base_dir}";find . -type 'f' -name '*.png' | xargs -I{} rm {}`
       end
       # output result
       create_result_html(parse_results)
@@ -471,7 +473,6 @@ module UIAutoMonkey
 
     def crash_report_list(times)
       # ios version >7.0  => *.ips
-      puts "ls -t #{crash_save_dir(times)}/kugou*.ips 2>&1;"
       `ls -t #{crash_save_dir(times)}/kugou*.ips 2>&1;`.strip.split(/\n/)
       # `ls -t #{crash_save_dir}/#{app_name}_*.crash`.strip.split(/\n/)
     end
