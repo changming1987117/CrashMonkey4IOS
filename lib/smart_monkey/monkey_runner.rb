@@ -108,16 +108,19 @@ module UIAutoMonkey
       new_cr_list = crash_report_list(@times+1)
       # increase crash report?
       diff_cr_list = new_cr_list - cr_list
+      puts diff_cr_list
       if diff_cr_list.size > 0
         @crashed = true
-        new_cr_name = File.basename(diff_cr_list[0]).gsub(/\.ips$/, '.crash')
+        diff_cr_list.each do |i|
+        new_cr_name = File.basename(i).gsub(/\.ips$/, '.crash')
         new_cr_path = File.join(result_dir, new_cr_name)
         log "Find new crash report: #{new_cr_path}"        
         if dsym_base_path != ''
           puts "Symbolicating crash report..."
-          symbolicating_crash_report(diff_cr_list[0])
+          symbolicating_crash_report(i)
         end
-        FileUtils.cp diff_cr_list[0], new_cr_path
+        FileUtils.cp i, new_cr_path
+        end
       else
         `cd "#{result_base_dir}";find . -type 'f' -name '*.png' | xargs -I{} rm {}`
       end
@@ -435,7 +438,7 @@ module UIAutoMonkey
     end
     
     def symbolicatecrash_base_path()
-      `find #{xcode_path} -name symbolicatecrash`.strip
+      `find #{xcode_path} -name symbolicatecrash -type f|grep -v Simulator`.strip
     end
 
     def symbolicating_crash_report(crash_base_path)
