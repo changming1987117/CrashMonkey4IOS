@@ -6,7 +6,7 @@ module UIAutoMonkey
   require 'rexml/document'
   require 'erubis'
   require 'json'
-
+  require 'open4'
   class MonkeyRunner
     RESULT_BASE_PATH = File.expand_path('smart_monkey_result')
     INSTRUMENTS_TRACE_PATH = File.expand_path('*.trace')
@@ -71,7 +71,11 @@ module UIAutoMonkey
       @no_run = false
       @uia_trace = false
     end
-
+    def show_failure
+      pid = fork{ yield }
+      puts "222222", pid
+      #Process.kill("TERM", pid)
+    end
     def runMonkey(**arg)    
         device = arg[:device]
         app = arg[:app]
@@ -91,16 +95,24 @@ module UIAutoMonkey
       pull_crash_files(@times+1)
       cr_list = crash_report_list(@times+1)
       start_time = Time.now
+      device = @options[:device]
+      abs_app_path = @options[:abs_app_path]
+      time_limit_sec = @options[:time_limit_sec]
+      result_base_dir = @options[:result_base_dir]
+      xcfile = @options[:xcfile]
+      code = @options[:code]
       watch_syslog do
         begin
-            runMonkey(device:@options[:device], app:@options[:abs_app_path], bundleId:@options[:app_path], time_limit:@options[:time_limit_sec], port:@options[:port], proxyport:@options[:proxyport], jar:@options[:jar], host:@options[:host],reuse:@options[:reuse], result_base_dir:result_base_dir)
-          # unless time_limit_sec.nil?
-            # run_process(%W(instruments -w #{device} -l #{time_limit} -t #{automation_template_path} #{app_path} -e UIASCRIPT #{ui_custom_path} -e UIARESULTSPATH #{result_base_dir}))
-          # else
-            # run_process(%W(instruments -w #{device} -t #{automation_template_path} #{app_path} -e UIASCRIPT #{ui_custom_path} -e UIARESULTSPATH #{result_base_dir}))
-          # end
-        rescue
-          kill_all('iPhone Simulator')
+            puts "sh /Users/kugou/monkey.sh  #{abs_app_path} #{device} #{xcfile} #{code}"
+            pid = Process.spawn("sh /Users/kugou/monkey.sh  #{abs_app_path} #{device} #{xcfile} #{code}")
+            Timeout::timeout(time_limit_sec) {
+                puts 'waiting for the process to end'
+                Process.wait(pid)
+                puts 'process finished in time'
+            }
+        rescue Timeout::Error
+            puts 'process not finished in time, killing it'
+            Process.kill('TERM', pid)
         end
       end
 
@@ -108,18 +120,18 @@ module UIAutoMonkey
       new_cr_list = crash_report_list(@times+1)
       # increase crash report?
       diff_cr_list = new_cr_list - cr_list
-      puts diff_cr_list
       if diff_cr_list.size > 0
         @crashed = true
-        diff_cr_list.each do |i|
-        new_cr_name = File.basename(i).gsub(/\.ips$/, '.crash')
-        new_cr_path = File.join(result_dir, new_cr_name)
-        log "Find new crash report: #{new_cr_path}"        
-        if dsym_base_path != ''
-          puts "Symbolicating crash report..."
-          symbolicating_crash_report(i)
-        end
-        FileUtils.cp i, new_cr_path
+        diff_cr_list.each do |diff_cr|
+            new_cr_name = File.basename(diff_cr).gsub(/\.ips$/, '.crash')
+            new_cr_path = File.join(result_dir, new_cr_name)
+            log "Find new crash report: #{new_cr_path}"        
+            if dsym_base_path != ''
+              puts "Symbolicating crash report..."
+              symbolicating_crash_report(diff_cr)
+              
+            end
+            FileUtils.cp diff_cr, new_cr_path
         end
       else
         `cd "#{result_base_dir}";find . -type 'f' -name '*.png' | xargs -I{} rm {}`
@@ -438,10 +450,11 @@ module UIAutoMonkey
     end
     
     def symbolicatecrash_base_path()
-      `find #{xcode_path} -name symbolicatecrash -type f|grep -v Simulator`.strip
+      `find #{xcode_path} -name symbolicatecrash|grep -v simulator`.strip
     end
 
     def symbolicating_crash_report(crash_base_path)
+        puts "DEVELOPER_DIR=#{xcode_developer_path} #{symbolicatecrash_base_path} -o #{crash_base_path} #{crash_base_path} #{dsym_base_path};wait;"
       `DEVELOPER_DIR=#{xcode_developer_path} #{symbolicatecrash_base_path} -o #{crash_base_path} #{crash_base_path} #{dsym_base_path};wait;`
       
     end

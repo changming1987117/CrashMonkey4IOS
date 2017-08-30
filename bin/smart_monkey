@@ -12,8 +12,10 @@ require 'smart_monkey'
 opts = {}
 ARGV.options do |o|
   o.on('-a app_name', 'Bundle ID of the desired target on device(Required)') {|b| opts[:app_path] = b}
-  o.on('-p app_apth', 'Absolute AppPath of the desired target') {|b| opts[:abs_app_path] = b}
+  o.on('-p prj_apth', 'Absolute AppPath of the desired target') {|b| opts[:abs_app_path] = b}
   o.on('-w device', 'Target Device UDID') {|b| opts[:device] = b}
+  o.on('-x XCFilePath', 'XCFilePath') {|b| opts[:xcfile] = b}
+  o.on('--code code', 'CodeCovFile') {|b| opts[:code] = b}
   o.on('-n run_count', 'How many times monkeys run(default: 1)') {|b| opts[:run_count] = b.to_i}
   o.on('-d result_dir', 'Where to output result(default: ./smart_monkey_result)') {|b| opts[:result_base_dir] = File.expand_path(b)}
   o.on('-t time_limit_sec', 'Time limit minutes of running(Required) ') {|b| opts[:time_limit_sec] = b.to_i}
@@ -42,18 +44,6 @@ if opts[:version]
   dirname = File.dirname(File.dirname(__FILE__))
   filepath = File.join(dirname, "VERSION")
   puts File.open(filepath, 'rb') { |file| file.read }
-  exit(1)
-end
-
-if opts[:custom_cfg_path]
-  if !File.directory? opts[:custom_cfg_path]
-    puts ARGV.options.help 
-    exit(1) 
-  end
-end
-
-unless opts[:app_path] || opts[:show_config] || opts[:list_app] || opts[:reset_iphone_simulator] || opts[:list_devices]
-  puts ARGV.options.help
   exit(1)
 end
 
