@@ -71,11 +71,7 @@ module UIAutoMonkey
       @no_run = false
       @uia_trace = false
     end
-    def show_failure
-      pid = fork{ yield }
-      puts "222222", pid
-      #Process.kill("TERM", pid)
-    end
+
     def runMonkey(**arg)    
         device = arg[:device]
         app = arg[:app]
@@ -103,8 +99,8 @@ module UIAutoMonkey
       code = @options[:code]
       watch_syslog do
         begin
-            puts "sh /Users/kugou/monkey.sh  #{abs_app_path} #{device} #{xcfile} #{code}"
-            pid = Process.spawn("sh /Users/kugou/monkey.sh  #{abs_app_path} #{device} #{xcfile} #{code}")
+            puts "sh /Users/ci/monkey.sh  #{abs_app_path} #{device} #{xcfile} #{code}"
+            pid = Process.spawn("sh /Users/ci/monkey.sh  #{abs_app_path} #{device} #{xcfile} #{code}")
             Timeout::timeout(time_limit_sec) {
                 puts 'waiting for the process to end'
                 Process.wait(pid)
@@ -113,6 +109,8 @@ module UIAutoMonkey
         rescue Timeout::Error
             puts 'process not finished in time, killing it'
             Process.kill('TERM', pid)
+            sleep 2
+            `python /Users/ci/kill_xcode.py`.strip
         end
       end
 
@@ -450,7 +448,7 @@ module UIAutoMonkey
     end
     
     def symbolicatecrash_base_path()
-      `find #{xcode_path} -name symbolicatecrash|grep -v simulator`.strip
+      `find #{xcode_path} -name symbolicatecrash|grep -v Simulator`.strip
     end
 
     def symbolicating_crash_report(crash_base_path)
